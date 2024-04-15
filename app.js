@@ -61,27 +61,7 @@ app.use(errorController.get404);
 mongoose
   .connect(MONGO_URI)
   .then((result) => {
-    // Assuming you have a model named User
-    User.findOne()
-      .then((firstUser) => {
-        if (!firstUser) {
-          // console.log("No user found in the collection");
-          const user = new User({ name: "etoo", email: "etoo@gmail.com" });
-          user
-            .save()
-            .then((user) => {
-              console.log("User created");
-              app.listen(3000);
-            })
-            .catch((err) => console.log(err));
-        } else {
-          app.listen(3000);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to find the first user:", err);
-      });
-
     console.log("Connected");
+    app.listen(3000);
   })
   .catch((err) => console.log(err));

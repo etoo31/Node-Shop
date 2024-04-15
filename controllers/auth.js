@@ -13,15 +13,29 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById("65fc4f00ccec3e5941f7062a")
+  const email = req.body.email;
+  const password = req.body.password;
+  User.findOne({ email: email })
     .then((user) => {
-      //console.log(user);
-      req.session.user = user;
-      //console.log("Why it's not a mongoose ? : ", req.session.user);
-      req.session.isLoggedIn = true;
-      req.session.save((err) => {
-        res.redirect("/");
-      });
+      if (!user) {
+        return res.redirect("/login");
+      }
+      bcrypt
+        .compare(password, user.password)
+        .then((doMatch) => {
+          if (doMatch) {
+            req.session.user = user;
+            req.session.isLoggedIn = true;
+            return req.session.save((err) => {
+              res.redirect("/");
+            });
+          }
+          res.redirect("/login");
+        })
+        .catch((err) => {
+          console.log(err);
+          res.redirect("/login");
+        });
     })
     .catch((err) => console.log(err));
 };

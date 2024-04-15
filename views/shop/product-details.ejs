@@ -1,0 +1,20 @@
+<%- include('../includes/head.ejs')%> <%- include('../includes/endHead.ejs')%>
+
+<body>
+  <%- include('../includes/navigation.ejs')%>
+  <% if (product.length) {%>
+  <main class="centered">
+    <h1><%=product[0].title%></h1>
+    <hr/>
+    <img class="img" src="<%=product[0].imageUrl%>" alt="<%=product[0].title%>">
+    <h2><%=product[0].price%>$</h2>
+    <p><%=product[0].description%></p> 
+    <%if (isAuthenticated) { %>
+    <%- include('../includes/addToCart.ejs' , {product:product[0]})%>
+    <%}%>
+  </main>
+  <% } else { %>
+    <h1 class="centered">There is no product with this iD</h1>
+  <% }%>
+</body>
+</html>

@@ -5,6 +5,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoSessionStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 // custome modules
 const adminRouter = require("./routes/admin");
 const shopRouter = require("./routes/shop");
@@ -13,7 +14,6 @@ const errorController = require("./controllers/error");
 //db
 const mongoose = require("mongoose");
 const User = require("./models/user");
-const user = require("./models/user");
 
 const app = express();
 const MONGO_URI =
@@ -25,6 +25,8 @@ const storeSession = new MongoSessionStore({
 // let express know that we are using EJS templating engine
 app.set("view engine", "ejs");
 app.set("veiws", "views");
+
+const csrfProtection = csrf();
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -38,8 +40,10 @@ app.use(
     store: storeSession,
   })
 );
+app.use(csrfProtection);
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
   next();
 });
 app.use((req, res, next) => {

@@ -39,6 +39,10 @@ app.use(
   })
 );
 app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  next();
+});
+app.use((req, res, next) => {
   if (!req.session.user) {
     //console.log("the user is not logged in");
     next();

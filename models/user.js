@@ -76,7 +76,7 @@ userSchema.methods.addOrder = function () {
       // console.log(products);
       const order = new Order({
         products: products,
-        user: { name: this.name, email: this.email, _id: this._id },
+        user: { email: this.email, _id: this._id },
       });
       return order.save();
     })

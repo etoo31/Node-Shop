@@ -87,7 +87,7 @@ exports.getOrders = (req, res, next) => {
     })
     .catch((err) => console.log(err));
 };
-exports.postCheckout = (req, res, next) => {
+exports.postOrder = (req, res, next) => {
   req.user
     .addOrder()
     .then((result) => {

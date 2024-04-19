@@ -7,6 +7,7 @@ const session = require("express-session");
 const MongoSessionStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+require("dotenv").config();
 // custome modules
 const adminRouter = require("./routes/admin");
 const shopRouter = require("./routes/shop");
@@ -17,10 +18,9 @@ const mongoose = require("mongoose");
 const User = require("./models/user");
 
 const app = express();
-const MONGO_URI =
-  "mongodb+srv://etoo:sS3ItE9DIwBBUMVO@cluster0.zrumrqq.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0";
+
 const storeSession = new MongoSessionStore({
-  uri: MONGO_URI,
+  uri: process.env.DATABASE_URL,
   collection: "sessions",
 });
 // let express know that we are using EJS templating engine
@@ -69,7 +69,7 @@ app.use(authRouter);
 app.use(errorController.get404);
 
 mongoose
-  .connect(MONGO_URI)
+  .connect(process.env.DATABASE_URL)
   .then((result) => {
     console.log("Connected");
     app.listen(3000);

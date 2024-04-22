@@ -1,5 +1,7 @@
 const { render } = require("ejs");
 const bcrypt = require("bcryptjs");
+const sendMail = require("../utils/transporter").sendMail;
+require("dotenv").config();
 
 const User = require("../models/user");
 exports.getLogin = (req, res, next) => {
@@ -84,6 +86,20 @@ exports.postSignup = (req, res, next) => {
           return newUser.save();
         })
         .then((result) => {
+          const mailOptions = {
+            from: {
+              name: "Your Shop",
+              address: process.env.MAIL,
+            }, // sender address
+            to: email, // list of receivers
+            subject: "Sending email via nodemailer for gmail only ✔", // Subject line
+            text: "Hello world?", // plain text body
+            html: "<b>Hello world?</b>", // html body
+          };
+          return sendMail(mailOptions);
+        })
+        .then(() => {
+          console.log("i hope it sends mail");
           res.redirect("/login");
         })
         .catch((err) => console.log(err));

@@ -61,29 +61,31 @@ exports.updateProduct = (req, res, next) => {
   // console.log("hey let me see this :", prodID);
   Product.findById(prodID)
     .then((product) => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        console.log("You can't edit product you don't own");
+        return res.redirect("/");
+      }
       product.title = title;
       product.imageUrl = imageUrl;
       product.price = price;
       product.description = description;
-      product.save();
-      res.redirect("/admin/products");
+      product
+        .save()
+        .then((_) => {
+          return res.redirect("/admin/products");
+        })
+        .catch((err) => console.log(err));
     })
     .catch((err) => console.log(err));
 };
 exports.deleteProduct = (req, res, next) => {
   let prodID = req.body.productID;
-  Product.findByIdAndDelete(prodID)
-    .then((product) => {
-      if (!product) {
-        console.log("there is no product to destory");
-        return new Promise();
-      } else {
-        console.log("Destroyed product");
-        return req.user.deleteCartItemById(prodID);
-      }
-    })
-    .then((_) => {
-      res.redirect("/admin/products");
+  Product.deleteOne({ _id: prodID, userId: req.user._id })
+    .then((result) => {
+      if (result.deletedCount === 0) {
+        console.log("You can't delete a product you don't own");
+      } else console.log("Destroyed product");
+      return res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
 };

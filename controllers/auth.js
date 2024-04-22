@@ -86,6 +86,7 @@ exports.postSignup = (req, res, next) => {
           return newUser.save();
         })
         .then((result) => {
+          res.redirect("/login");
           const mailOptions = {
             from: {
               name: "Your Shop",
@@ -96,11 +97,13 @@ exports.postSignup = (req, res, next) => {
             text: "Hello world?", // plain text body
             html: "<b>Hello world?</b>", // html body
           };
-          return sendMail(mailOptions);
-        })
-        .then(() => {
-          console.log("i hope it sends mail");
-          res.redirect("/login");
+          sendMail(mailOptions)
+            .then((_) => {
+              console.log("MAIL has been snet to : ", email);
+            })
+            .catch((err) => {
+              console.log("error sending email , ", err);
+            });
         })
         .catch((err) => console.log(err));
     })

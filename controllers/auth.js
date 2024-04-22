@@ -5,6 +5,7 @@ const crypto = require("crypto");
 require("dotenv").config();
 
 const User = require("../models/user");
+const user = require("../models/user");
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
   if (message.length > 0) {
@@ -178,6 +179,51 @@ exports.getNewPassordPage = (req, res, next) => {
         userId: user._id.toString(),
         passwordToken: token,
       });
+    })
+    .catch((err) => console.log(err));
+};
+exports.postNewPassword = (req, res, next) => {
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+  const userId = req.body.userId;
+  const token = req.body.passwordToken;
+  // console.log(password);
+  // console.log(userId);
+  // console.log(token);
+  let resetUser;
+  User.findOne({
+    token: token,
+    tokenExpiryDate: { $gt: Date.now() },
+    _id: userId,
+  })
+    .then((user) => {
+      if (!user) {
+        console.log("No user found to reset it's password");
+        return res.redirect("/login");
+      }
+      resetUser = user;
+      return bcrypt
+        .hash(password, 12)
+        .then((hashedPass) => {
+          resetUser.password = hashedPass;
+          resetUser.token = undefined;
+          resetUser.tokenExpiryDate = undefined;
+          return resetUser.save();
+        })
+        .then((_) => {
+          res.redirect("/login");
+          const mailOptions = {
+            from: {
+              name: "Your Shop",
+              address: process.env.MAIL,
+            }, // sender address
+            to: resetUser.email, // list of receivers
+            subject: "Update password completed✔", // Subject line
+            // text: "Hello world?", // plain text body
+            html: "<b>Your password is updated successfully</b>", // html body
+          };
+          return sendMail(mailOptions).catch((err) => console.log(err));
+        });
     })
     .catch((err) => console.log(err));
 };

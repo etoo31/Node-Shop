@@ -1,6 +1,7 @@
 const { render } = require("ejs");
 const bcrypt = require("bcryptjs");
 const sendMail = require("../utils/transporter").sendMail;
+const crypto = require("crypto");
 require("dotenv").config();
 
 const User = require("../models/user");
@@ -119,5 +120,43 @@ exports.getReset = (req, res, next) => {
     pageTitle: "Reset Password",
     path: "/reset",
     errorMessage: message,
+  });
+};
+exports.postReset = (req, res, next) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log(err);
+      return res.redirect("/reset");
+    }
+    const token = buffer.toString("hex");
+
+    User.findOne({ email: req.body.email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "Can't find a user with that email.");
+          return res.redirect("/reset");
+        }
+        user.token = token;
+        user.tokenExpiryDate = Date.now() + 60 * 60 * 1000; // expiry date 1 hour
+        return user.save();
+      })
+      .then((_) => {
+        res.redirect("/");
+        const mailOptions = {
+          from: {
+            name: "Your Shop",
+            address: process.env.MAIL,
+          }, // sender address
+          to: req.body.email, // list of receivers
+          subject: "Reset your password✔", // Subject line
+          // text: ", // plain text body
+          html: `<p>This email is sent to you because you requested reseting your password</p>
+                 <p>Click this <a href = 'http://localhost:3000/reset/${token}'> Link </a> to rest your password</p>`, // html body
+        };
+        sendMail(mailOptions)
+          .then((_) => console.log("reseting password email send sussfully"))
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
   });
 };

@@ -237,9 +237,6 @@ exports.postNewPassword = (req, res, next) => {
     req.flash("error", errors.array()[0].msg);
     return res.redirect(`/reset/${token}`);
   }
-  // console.log(password);
-  // console.log(userId);
-  // console.log(token);
   let resetUser;
   User.findOne({
     token: token,

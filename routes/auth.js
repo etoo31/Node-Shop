@@ -26,6 +26,7 @@ router.post(
     check("email")
       .isEmail()
       .withMessage("Please enter a valid email address.")
+      .normalizeEmail()
       .custom((value, { req }) => {
         return User.findOne({ email: value }).then((user) => {
           if (user) {
@@ -34,16 +35,19 @@ router.post(
         });
       }),
     body("password")
+      .trim()
       .isLength({
         min: 5,
       })
       .withMessage("Password must be atleast of length 5"),
-    body("confirmPassword").custom((value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("Passwords must match !!");
-      }
-      return true;
-    }),
+    body("confirmPassword")
+      .trim()
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Passwords must match !!");
+        }
+        return true;
+      }),
   ],
   authController.postSignup
 );

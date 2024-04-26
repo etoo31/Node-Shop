@@ -10,7 +10,7 @@
         <% if (errorMessage) {%>
             <div class="user-message error-message"><%=errorMessage%></div>
         <%}%>
-        <form class="login-form" action="/signup" method="POST" novalidate>
+        <form class="login-form" action="/signup" method="POST">
             <div class="form-control">
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email">

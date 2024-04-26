@@ -62,15 +62,17 @@ router.get("/reset/:token", authController.getNewPassordPage);
 router.post(
   "/reset/new-password",
   [
-    body("password", "Password must be atleast 6 charachters").isLength({
+    body("password", "Password must be atleast 6 charachters").trim().isLength({
       min: 5,
     }),
-    body("confirmPassword").custom((value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("password must match");
-      }
-      return true;
-    }),
+    body("confirmPassword")
+      .trim()
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("password must match");
+        }
+        return true;
+      }),
   ],
   authController.postNewPassword
 );

@@ -11,10 +11,15 @@ router.get("/login", authController.getLogin);
 router.post(
   "/login",
   [
-    body("email").isEmail().withMessage("Please Enter a valid email"),
-    body("password", "This password is not even a valid password").isLength({
-      min: 5,
-    }),
+    body("email")
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Please Enter a valid email"),
+    body("password", "This password is not even a valid password")
+      .trim()
+      .isLength({
+        min: 5,
+      }),
   ],
   authController.postLogin
 );

@@ -230,6 +230,13 @@ exports.postNewPassword = (req, res, next) => {
   const confirmPassword = req.body.confirmPassword;
   const userId = req.body.userId;
   const token = req.body.passwordToken;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    req.flash("error", errors.array()[0].msg);
+    return res.redirect(`/reset/${token}`);
+  }
   // console.log(password);
   // console.log(userId);
   // console.log(token);

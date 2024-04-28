@@ -77,7 +77,10 @@ exports.postLogin = (req, res, next) => {
           res.redirect("/login");
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
@@ -152,7 +155,10 @@ exports.postSignup = (req, res, next) => {
           console.log("error sending email , ", err);
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 
 exports.getReset = (req, res, next) => {
@@ -199,9 +205,15 @@ exports.postReset = (req, res, next) => {
         };
         sendMail(mailOptions)
           .then((_) => console.log("reseting password email send sussfully"))
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            const error = new Error("Server Error please try again later");
+            next(error);
+          });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        const error = new Error("Server Error please try again later");
+        next(error);
+      });
   });
 };
 exports.getNewPassordPage = (req, res, next) => {
@@ -223,7 +235,10 @@ exports.getNewPassordPage = (req, res, next) => {
         passwordToken: token,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.postNewPassword = (req, res, next) => {
   const password = req.body.password;
@@ -272,5 +287,8 @@ exports.postNewPassword = (req, res, next) => {
           return sendMail(mailOptions).catch((err) => console.log(err));
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };

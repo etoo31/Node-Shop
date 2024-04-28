@@ -11,7 +11,10 @@ exports.getIndex = (req, res, next) => {
         path: "/",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -23,7 +26,10 @@ exports.getProducts = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 
 exports.getProductDetails = (req, res, next) => {
@@ -37,7 +43,10 @@ exports.getProductDetails = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 
 exports.getCart = (req, res, next) => {
@@ -51,7 +60,10 @@ exports.getCart = (req, res, next) => {
         products: user.cart.items,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.addToCart = (req, res, next) => {
   let ID = req.body.productID;
@@ -61,7 +73,10 @@ exports.addToCart = (req, res, next) => {
       // console.log(result);
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.deleteCartItem = (req, res, next) => {
   let ID = req.body.productID;
@@ -71,7 +86,10 @@ exports.deleteCartItem = (req, res, next) => {
       console.log(result);
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.getOrders = (req, res, next) => {
   req.user
@@ -85,7 +103,10 @@ exports.getOrders = (req, res, next) => {
       });
       //res.redirect("/");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.postOrder = (req, res, next) => {
   req.user
@@ -93,5 +114,8 @@ exports.postOrder = (req, res, next) => {
     .then((result) => {
       res.redirect("/");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };

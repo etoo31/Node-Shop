@@ -54,7 +54,10 @@ exports.getAdminProducts = (req, res, next) => {
         path: "/admin/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -71,7 +74,10 @@ exports.getEditProduct = (req, res, next) => {
         errors: [],
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.updateProduct = (req, res, next) => {
   let prodID = req.body.productID;
@@ -114,9 +120,15 @@ exports.updateProduct = (req, res, next) => {
         .then((_) => {
           return res.redirect("/admin/products");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          const error = new Error("Server Error please try again later");
+          next(error);
+        });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
 exports.deleteProduct = (req, res, next) => {
   let prodID = req.body.productID;
@@ -127,5 +139,8 @@ exports.deleteProduct = (req, res, next) => {
       } else console.log("Destroyed product");
       return res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };

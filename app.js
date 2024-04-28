@@ -58,7 +58,10 @@ app.use((req, res, next) => {
         req.user = user;
         next();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        const error = new Error("Can't find user in the session");
+        next(error);
+      });
   }
 });
 app.use("/admin", adminRouter);
@@ -68,10 +71,16 @@ app.use(authRouter);
 
 app.use(errorController.get404);
 
+app.use(errorController.get500);
 mongoose
   .connect(process.env.DATABASE_URL)
   .then((result) => {
     console.log("Connected");
     app.listen(3000);
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    const error = new Error(
+      "Can't connect to the databse using this ip-address"
+    );
+    throw error;
+  });

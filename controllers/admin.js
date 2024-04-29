@@ -50,7 +50,7 @@ exports.addProduct = (req, res, next) => {
   }
   const product = new Product({
     title: title,
-    imageUrl: image.path,
+    imageUrl: "/" + image.path,
     price: price,
     description: description,
     userId: req.user,
@@ -133,7 +133,7 @@ exports.updateProduct = (req, res, next) => {
       product.title = title;
       product.price = price;
       product.description = description;
-      if (image) product.imageUrl = image.path;
+      if (image) product.imageUrl = "/" + image.path;
       product
         .save()
         .then((_) => {

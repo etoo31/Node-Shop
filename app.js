@@ -3,6 +3,7 @@ const path = require("path");
 // 3rd party packages
 const express = require("express");
 const bodyParser = require("body-parser");
+const multer = require("multer");
 const session = require("express-session");
 const MongoSessionStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
@@ -28,10 +29,33 @@ app.set("view engine", "ejs");
 app.set("veiws", "views");
 
 const csrfProtection = csrf();
-
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    // console.log(new Date().toISOString().split("."));
+    const s = new Date().toISOString().split(".")[0].split(":");
+    const name = s[0] + s[1] + s[2];
+    cb(null, name + "-" + file.originalname);
+  },
+});
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else cb(null, false);
+};
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(bodyParser.urlencoded({ extended: false }));
+// Multer middleware moved here
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 
 app.use(
   session({
@@ -43,11 +67,14 @@ app.use(
 );
 app.use(csrfProtection);
 app.use(flash());
+
+// Middleware for setting isAuthenticated
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.csrfToken = req.csrfToken();
   next();
 });
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     //console.log("the user is not logged in");

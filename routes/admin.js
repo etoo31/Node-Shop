@@ -15,7 +15,6 @@ router.post(
   "/add-product",
   [
     body("title", "Title must be atlease of 5 char").isLength({ min: 5 }),
-    body("imageUrl", "Image must be a valid URL").isURL(),
     body("price", "Price must contains only numbers").isFloat(),
     body(
       "description",
@@ -32,7 +31,6 @@ router.post(
   "/edit-product",
   [
     body("title", "Title must be atlease of 5 char").isLength({ min: 5 }),
-    body("imageUrl", "Image must be a valid URL").isURL(),
     body("price", "Price must contains only numbers").isFloat(),
     body(
       "description",

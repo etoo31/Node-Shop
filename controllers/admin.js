@@ -15,9 +15,24 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.addProduct = (req, res, next) => {
   let title = req.body.title;
-  let imageUrl = req.body.imageUrl;
+  let image = req.file;
   let price = req.body.price;
   let description = req.body.description;
+
+  if (!image) {
+    return res.status(422).render("admin/add-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      product: {
+        title: title,
+        price: price,
+        description: description,
+      },
+      errorMessage: "Image must be of type 'jpg' , 'png' or 'jpeg'",
+      errors: [],
+    });
+  }
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/add-product", {
@@ -26,7 +41,6 @@ exports.addProduct = (req, res, next) => {
       editing: false,
       product: {
         title: title,
-        imageUrl: imageUrl,
         price: price,
         description: description,
       },
@@ -36,14 +50,20 @@ exports.addProduct = (req, res, next) => {
   }
   const product = new Product({
     title: title,
-    imageUrl: imageUrl,
+    imageUrl: image.path,
     price: price,
     description: description,
     userId: req.user,
   });
-  product.save().then((result) => {
-    res.redirect("/admin/products");
-  });
+  product
+    .save()
+    .then((result) => {
+      res.redirect("/admin/products");
+    })
+    .catch((err) => {
+      const error = new Error("Server error , Please try again later");
+      next(error);
+    });
 };
 exports.getAdminProducts = (req, res, next) => {
   Product.find({ userId: req.user })
@@ -82,7 +102,7 @@ exports.getEditProduct = (req, res, next) => {
 exports.updateProduct = (req, res, next) => {
   let prodID = req.body.productID;
   let title = req.body.title;
-  let imageUrl = req.body.imageUrl;
+  let image = req.file;
   let price = req.body.price;
   let description = req.body.description;
   // console.log("hey let me see this :", prodID);
@@ -95,7 +115,6 @@ exports.updateProduct = (req, res, next) => {
       editing: true,
       product: {
         title: title,
-        imageUrl: imageUrl,
         price: price,
         description: description,
         _id: prodID,
@@ -112,9 +131,9 @@ exports.updateProduct = (req, res, next) => {
         return res.redirect("/");
       }
       product.title = title;
-      product.imageUrl = imageUrl;
       product.price = price;
       product.description = description;
+      if (image) product.imageUrl = image.path;
       product
         .save()
         .then((_) => {

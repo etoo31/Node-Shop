@@ -1,6 +1,8 @@
 //custome module
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
+const fileHelper = require("../utils/file");
+const { file } = require("pdfkit");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/add-product", {
@@ -133,7 +135,10 @@ exports.updateProduct = (req, res, next) => {
       product.title = title;
       product.price = price;
       product.description = description;
-      if (image) product.imageUrl = "/" + image.path;
+      if (image) {
+        fileHelper.deleteFile(product.imageUrl.substring(1));
+        product.imageUrl = "/" + image.path;
+      }
       product
         .save()
         .then((_) => {
@@ -151,11 +156,23 @@ exports.updateProduct = (req, res, next) => {
 };
 exports.deleteProduct = (req, res, next) => {
   let prodID = req.body.productID;
-  Product.deleteOne({ _id: prodID, userId: req.user._id })
+  let imageUrl;
+  Product.findById(prodID)
+    .then((product) => {
+      if (!product) {
+        console.log("You can't delete a product you don't own");
+        return res.redirect("/admin/products");
+      }
+      imageUrl = product.imageUrl;
+      return Product.deleteOne({ _id: prodID, userId: req.user._id });
+    })
     .then((result) => {
       if (result.deletedCount === 0) {
         console.log("You can't delete a product you don't own");
-      } else console.log("Destroyed product");
+      } else {
+        console.log("Destroyed product");
+        fileHelper.deleteFile(imageUrl.substring(1));
+      }
       return res.redirect("/admin/products");
     })
     .catch((err) => {

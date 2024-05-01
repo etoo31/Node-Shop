@@ -1,10 +1,9 @@
 const path = require("path");
 const fs = require("fs");
+const pdfDocument = require("pdfkit");
 //custome module
 const Product = require("../models/product");
-// const Cart = require("../models/cart");
 const Order = require("../models/order");
-const pdfDocument = require("pdfkit");
 
 exports.getIndex = (req, res, next) => {
   Product.find()

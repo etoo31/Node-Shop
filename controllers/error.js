@@ -7,6 +7,7 @@ exports.get404 = (req, res, next) => {
   //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
 };
 exports.get500 = (error, req, res, next) => {
+  console.log(error);
   return res.status(500).render("500", {
     pageTitle: "Server Error",
     path: "/500",

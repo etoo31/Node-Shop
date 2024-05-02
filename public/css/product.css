@@ -39,7 +39,7 @@
   color: #00695c;
 }
 .pagination a:hover,
-.active {
+.current-page {
   color: white !important;
   background-color: #00695c;
 }

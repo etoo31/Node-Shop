@@ -4,7 +4,7 @@
   <%}%> <% if (hasPerviouse) {%>
   <a href="/?page=<%=currentPage-1%>"><%=currentPage-1%></a>
   <%}%>
-  <a class="active" href="/?page=<%=currentPage%>"><%=currentPage%></a>
+  <a class="current-page" href="/?page=<%=currentPage%>"><%=currentPage%></a>
   <% if (hasNext) {%>
   <a href="/?page=<%=currentPage+1%>"><%=currentPage+1%></a>
   <%}%> <% if (lastPage !== currentPage && lastPage !== currentPage+1) {%>

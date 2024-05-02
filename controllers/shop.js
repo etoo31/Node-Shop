@@ -4,14 +4,29 @@ const pdfDocument = require("pdfkit");
 //custome module
 const Product = require("../models/product");
 const Order = require("../models/order");
+const PRODUCT_PER_PAGE = 1;
 
 exports.getIndex = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalNumber;
   Product.find()
+    .countDocuments()
+    .then((numberOfProducts) => {
+      totalNumber = numberOfProducts;
+      return Product.find()
+        .skip((page - 1) * PRODUCT_PER_PAGE)
+        .limit(PRODUCT_PER_PAGE);
+    })
     .then((products) => {
+      const totalPages = Math.ceil(totalNumber / PRODUCT_PER_PAGE);
       res.render("shop/index", {
         prods: products,
         pageTitle: "index",
         path: "/",
+        currentPage: page,
+        hasPerviouse: page > 1,
+        hasNext: page < totalPages,
+        lastPage: totalPages,
       });
     })
     .catch((err) => {

@@ -29,16 +29,17 @@
   text-align: center;
   margin-top: 2rem;
 }
-.pagination a:link,
-.pagination a:active {
-  margin: 0.5rem;
 
+.pagination a:link,
+.pagination a:visited {
+  margin: 0.5rem;
   padding: 0.5rem;
   border: solid 1px #00695c;
   text-decoration: none;
   color: #00695c;
 }
-.pagination a:hover {
-  color: white;
+.pagination a:hover,
+.active {
+  color: white !important;
   background-color: #00695c;
 }

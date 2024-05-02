@@ -187,10 +187,11 @@ form {
 
 .card__image {
   width: 100%;
+  text-align: center;
 }
 
 .card__image img {
-  width: 100%;
+  width: 80%;
 }
 
 .card__actions {

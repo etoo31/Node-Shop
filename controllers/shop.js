@@ -35,13 +35,27 @@ exports.getIndex = (req, res, next) => {
     });
 };
 exports.getProducts = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalNumber;
   Product.find()
+    .countDocuments()
+    .then((numberOfProducts) => {
+      totalNumber = numberOfProducts;
+      return Product.find()
+        .skip((page - 1) * PRODUCT_PER_PAGE)
+        .limit(PRODUCT_PER_PAGE);
+    })
     .then((products) => {
       // console.log(products);
+      const totalPages = Math.ceil(totalNumber / PRODUCT_PER_PAGE);
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "Shop",
         path: "/products",
+        currentPage: page,
+        hasPerviouse: page > 1,
+        hasNext: page < totalPages,
+        lastPage: totalPages,
       });
     })
     .catch((err) => {

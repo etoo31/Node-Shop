@@ -155,7 +155,8 @@ exports.updateProduct = (req, res, next) => {
     });
 };
 exports.deleteProduct = (req, res, next) => {
-  let prodID = req.body.productID;
+  let prodID = req.params.productId;
+  console.log("Product ID : ", prodID);
   let imageUrl;
   Product.findById(prodID)
     .then((product) => {
@@ -173,10 +174,9 @@ exports.deleteProduct = (req, res, next) => {
         console.log("Destroyed product");
         fileHelper.deleteFile(imageUrl.substring(1));
       }
-      return res.redirect("/admin/products");
+      res.status(200).json({ Message: "Success" });
     })
     .catch((err) => {
-      const error = new Error("Server Error please try again later");
-      next(error);
+      res.status(500).json({ Message: "Failed to delete this product" });
     });
 };

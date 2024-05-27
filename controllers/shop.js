@@ -141,6 +141,30 @@ exports.getOrders = (req, res, next) => {
       next(error);
     });
 };
+exports.getCheckout = (req, res, next) => {
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      // console.log(user.cart.items);
+      // console.log(req.user);
+      let total = 0;
+      const products = user.cart.items;
+      products.forEach((p) => {
+        total += p.quantity * p.productId.price;
+      });
+      res.render("shop/checkout", {
+        pageTitle: "checkout",
+        path: "/checkout",
+        products: user.cart.items,
+        totalSum: total,
+        user: req.user,
+      });
+    })
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
+};
 exports.postOrder = (req, res, next) => {
   req.user
     .addOrder()
@@ -192,4 +216,20 @@ exports.getInvoice = (req, res, next) => {
       .text("Total price :                              $" + totalPrice);
     pdfDoc.end();
   });
+};
+exports.payMobWebHook = (req, res, next) => {
+  const success = req.query.success;
+  console.log("Checkout Success : ", success);
+  res.redirect("/checkout/success");
+};
+exports.checkoutSuccess = (req, res, next) => {
+  req.user
+    .addOrder()
+    .then((result) => {
+      res.redirect("/");
+    })
+    .catch((err) => {
+      const error = new Error("Server Error please try again later");
+      next(error);
+    });
 };
